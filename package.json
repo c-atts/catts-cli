@@ -1,0 +1,45 @@
+{
+  "name": "catts-cli",
+  "version": "0.0.4",
+  "description": "Facilitates the local development of C-ATTS recipes.",
+  "author": "Kristofer Lund <kristofer@kristoferlund.se>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/c-atts"
+  },
+  "bugs": "https://github.com/c-atts",
+  "homepage": "https://github.com/c-atts",
+  "keywords": [
+    "ethereum",
+    "attestations",
+    "eas",
+    "dfinity",
+    "ic",
+    "internet computer"
+  ],
+  "license": "MIT",
+  "bin": {
+    "catts": "dist/catts.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@jitl/quickjs-wasmfile-release-sync": "^0.29.2",
+    "catts-sdk": "^0.0.4",
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.5",
+    "node": "^20.15.0",
+    "node-fetch": "^3.3.2",
+    "quickjs-emscripten-core": "^0.29.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.2"
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE"
+  ]
+}
