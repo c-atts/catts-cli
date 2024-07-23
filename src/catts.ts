@@ -199,7 +199,7 @@ async function runCommand(recipeFolder: string) {
 
 const program = new Command();
 program
-  .version("0.0.4")
+  .version("0.0.5")
   .name("catts")
   .description("Supports the development of C-ATTS recipes.")
   .option(
