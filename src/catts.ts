@@ -75,10 +75,12 @@ async function queryCommand(
     if (options?.index !== undefined) {
       write(`\nRunning query with index: ${options.index} `);
       const query = recipe.queries[options.index];
-      queryResults = await fetchQuery(query);
+      queryResults = await fetchQuery(query, { verbose });
     } else {
       write("\nRunning all queries: ");
-      const queryPromises = recipe.queries.map(fetchQuery);
+      const queryPromises = recipe.queries.map((q) =>
+        fetchQuery(q, { verbose })
+      );
       queryResults = await Promise.all(queryPromises);
     }
 
@@ -144,7 +146,7 @@ async function runCommand(recipeFolder: string) {
     console.log("\nRecipe:", recipe.name);
 
     write("\n1/4 Running graphql queries... ");
-    const queryPromises = recipe.queries.map(fetchQuery);
+    const queryPromises = recipe.queries.map((q) => fetchQuery(q, { verbose }));
     const queryResults = await Promise.all(queryPromises);
     writeln("✅");
 
@@ -202,7 +204,7 @@ async function runCommand(recipeFolder: string) {
 
 const program = new Command();
 program
-  .version("0.0.7")
+  .version("0.0.8")
   .name("catts")
   .description("Supports the development of C-ATTS recipes.")
   .option(
