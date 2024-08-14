@@ -2,9 +2,6 @@
 
 This CLI tool is a wrapper around the CATTS SDK. It allows you to develop, test and run C–ATTS recipes locally. The tool fetches query results, runs processor scripts, and validates schema items against the recipe's schema.
 
-> [!NOTE]
-> C–ATTS is a work in progress. Features and functionality may change without notice. C–ATTS has not yet been publicly released and is not yet ready for general use.
-
 For some examples of recipes, see the [catts-recipes](https://github.com/c-atts/catts-recipes) repository.
 
 ## What is C–ATTS?

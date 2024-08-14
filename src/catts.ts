@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
 import "dotenv/config";
+
 import * as fs from "fs";
 import * as path from "path";
+
 import {
   Recipe,
   fetchQuery,
@@ -11,9 +13,10 @@ import {
   validateProcessorResult,
   validateSchemaItems,
 } from "catts-sdk";
+
 import { Command } from "commander";
-import { newQuickJSWASMModuleFromVariant } from "quickjs-emscripten-core";
 import RELEASE_SYNC from "@jitl/quickjs-wasmfile-release-sync";
+import { newQuickJSWASMModuleFromVariant } from "quickjs-emscripten-core";
 
 let verbose = false; // Variable to store verbose flag
 
@@ -62,7 +65,7 @@ function writeln(text: string) {
 
 async function queryCommand(
   recipeFolder: string,
-  options?: QueryCommandOptions,
+  options?: QueryCommandOptions
 ) {
   try {
     const recipe = await importRecipe(recipeFolder);
@@ -179,14 +182,14 @@ async function runCommand(recipeFolder: string) {
           schema: recipe.schema,
           resolver: recipe.resolver,
           revokable: recipe.revokable,
-        }),
+        })
       );
     }
 
     write("\n4/4 Validating schema items against schema... ");
     const schema = await validateSchemaItems({
       schemaItems,
-      recipe,
+      schema: recipe.schema,
     });
     writeln("✅\n");
 
@@ -199,12 +202,12 @@ async function runCommand(recipeFolder: string) {
 
 const program = new Command();
 program
-  .version("0.0.5")
+  .version("0.0.7")
   .name("catts")
   .description("Supports the development of C-ATTS recipes.")
   .option(
     "-e, --eth-address <address>",
-    "Ethereum address to use for queries. Defaults to the value of the USER_ETH_ADDRESS environment variable.",
+    "Ethereum address to use for queries. Defaults to the value of the USER_ETH_ADDRESS environment variable."
   )
   .option("-v, --verbose", "Enable verbose output");
 
@@ -221,7 +224,7 @@ program.hook("preAction", async (thisCommand) => {
   // Ensure USER_ETH_ADDRESS is set
   if (!process.env.USER_ETH_ADDRESS) {
     console.error(
-      "Error: USER_ETH_ADDRESS needs to be set, either via the -e option or by creating a .env file with USER_ETH_ADDRESS set. Place the .env file in the root of the project.",
+      "Error: USER_ETH_ADDRESS needs to be set, either via the -e option or by creating a .env file with USER_ETH_ADDRESS set. Place the .env file in the root of the project."
     );
     process.exit(1);
   }
@@ -232,7 +235,7 @@ program
   .argument("<recipeFolder>", "Path to the recipe folder.")
   .option(
     "-i, --index <index>",
-    "Index of query to run. Omit to run all queries",
+    "Index of query to run. Omit to run all queries"
   )
   .description("Fetch the query results from the specified recipe.")
   .action(async (recipeFolder, options) => {
