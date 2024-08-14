@@ -18,7 +18,8 @@ import { Command } from "commander";
 import RELEASE_SYNC from "@jitl/quickjs-wasmfile-release-sync";
 import { newQuickJSWASMModuleFromVariant } from "quickjs-emscripten-core";
 
-let verbose = false; // Variable to store verbose flag
+let verbose = false;
+let ethAddressOption = process.env.USER_ETH_ADDRESS;
 
 async function importRecipe(recipeFolder: string): Promise<Recipe> {
   const recipePath = path.join(recipeFolder, "recipe.json");
@@ -75,11 +76,24 @@ async function queryCommand(
     if (options?.index !== undefined) {
       write(`\nRunning query with index: ${options.index} `);
       const query = recipe.queries[options.index];
-      queryResults = await fetchQuery(query, { verbose });
+      queryResults = await fetchQuery({
+        query,
+        verbose,
+        placeHolderValues: {
+          userEthAddress: ethAddressOption,
+        },
+      });
     } else {
       write("\nRunning all queries: ");
-      const queryPromises = recipe.queries.map((q) =>
-        fetchQuery(q, { verbose })
+      const queryPromises = recipe.queries.map(
+        (q) =>
+          (queryResults = fetchQuery({
+            query: q,
+            verbose,
+            placeHolderValues: {
+              userEthAddress: ethAddressOption,
+            },
+          }))
       );
       queryResults = await Promise.all(queryPromises);
     }
@@ -146,7 +160,13 @@ async function runCommand(recipeFolder: string) {
     console.log("\nRecipe:", recipe.name);
 
     write("\n1/4 Running graphql queries... ");
-    const queryPromises = recipe.queries.map((q) => fetchQuery(q, { verbose }));
+    const queryPromises = recipe.queries.map((q) =>
+      fetchQuery({
+        query: q,
+        verbose,
+        placeHolderValues: { userEthAddress: ethAddressOption },
+      })
+    );
     const queryResults = await Promise.all(queryPromises);
     writeln("✅");
 
@@ -218,13 +238,12 @@ program.hook("preAction", async (thisCommand) => {
   verbose = thisCommand.opts().verbose;
 
   // If -e option is set, override process.env.USER_ETH_ADDRESS
-  const ethAddressOption = thisCommand.opts().ethAddress;
-  if (ethAddressOption) {
-    process.env.USER_ETH_ADDRESS = ethAddressOption;
+  if (thisCommand.opts().ethAddress) {
+    ethAddressOption = thisCommand.opts().ethAddress;
   }
 
   // Ensure USER_ETH_ADDRESS is set
-  if (!process.env.USER_ETH_ADDRESS) {
+  if (!ethAddressOption) {
     console.error(
       "Error: USER_ETH_ADDRESS needs to be set, either via the -e option or by creating a .env file with USER_ETH_ADDRESS set. Place the .env file in the root of the project."
     );
