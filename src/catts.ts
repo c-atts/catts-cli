@@ -84,7 +84,7 @@ async function queryCommand(
         },
       });
     } else {
-      write("\nRunning all queries: ");
+      write("\nRunning all queries:\n");
       const queryPromises = recipe.queries.map(
         (q) =>
           (queryResults = fetchQuery({
@@ -125,9 +125,20 @@ async function runProcessor({
   const vm = QuickJS.newContext();
 
   try {
+    // Add the queryResultRaw property to the global object
     const queryResultRaw = vm.newString(JSON.stringify(queryResults));
     vm.setProp(vm.global, "queryResultRaw", queryResultRaw);
     queryResultRaw.dispose();
+
+    // Add console.log function to the global object
+    const logFn = vm.newFunction("log", (...args) => {
+      console.log(...args.map((arg) => vm.dump(arg)));
+    });
+    const consoleObj = vm.newObject();
+    vm.setProp(consoleObj, "log", logFn);
+    vm.setProp(vm.global, "console", consoleObj);
+    logFn.dispose();
+    consoleObj.dispose();
 
     processor = `
       let queryResult = JSON.parse(queryResultRaw);
@@ -175,7 +186,7 @@ async function runCommand(recipeFolder: string) {
       writeln(JSON.stringify(queryResults, null, 2));
     }
 
-    write("\n2/4 Running processor... ");
+    writeln("\n2/4 Running processor... ");
     const processor = await loadProcessor(recipeFolder);
     const processorResult = await runProcessor({
       processor,
@@ -217,7 +228,7 @@ async function runCommand(recipeFolder: string) {
 
     console.log("💥 Done! Recipe is ready to be deployed.");
   } catch (error) {
-    console.log("\n🛑 Run failed");
+    console.log("🛑 Run failed");
     logError(error);
   }
 }
